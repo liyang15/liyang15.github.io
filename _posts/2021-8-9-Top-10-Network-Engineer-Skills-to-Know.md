@@ -6,8 +6,6 @@ tags: Network Engineer
 date: 2021-8-9
 ---
 
-# Top 10 Network Engineer Skills to Know
-
 - 1. Customer Relations客户关系
 - 2. Analytics and Troubleshooting分析与排故
 - 3. Firewalls and Security防火墙与安全
