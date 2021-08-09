@@ -1,8 +1,8 @@
 ---
 layout: post
 title:  "Top 10 Network Engineer Skills to Know"
-categories:
-tags:
+categories: Skills
+tags: Network Engineer
 date: 2021-8-9
 ---
 
