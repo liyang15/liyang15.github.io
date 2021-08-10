@@ -13,7 +13,7 @@ date: 2021-8-9
 - 5. Programming Languages编程语言
 - 6. Hardware and Infrastructure硬件与基础设施架构
 - 7. DNS
-- 8. IoT万物互联
+- 8. IoT物联网
 - 9. Virtualization and Automation虚拟化与自动化
 - 10. MPLS多协议标签交换
 
