@@ -8,7 +8,7 @@ date: 2021-8-12
 
 瞻博网络认证计划 (JNCP) 是含书面和动手实验考试的多层计划。我们的任务是验证全球领先的专业人士具备的瞻博网络技能
 
-[立即注册](https://learningportal.juniper.net/juniper/user_activity_info.aspx?id=JUNIPER-CERTIFICATION-PROGRAM-HOME)
+
 
 研究表明，接受过瞻博网络产品培训的 IT 专业人士的工作效率会提高 34%。现在开始提高您的效率。迈出职业生涯的下一步。
 
