@@ -28,6 +28,15 @@ p {
     line-height: 1.4em;
     color: #333;
 }
+.round_icon{
+  width: 200px;
+  height: 200px;
+  display: flex;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
 footer {
     border-top: 1px solid #d5d5d5;
     font-size: .8em;
