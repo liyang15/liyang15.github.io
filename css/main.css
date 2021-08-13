@@ -28,7 +28,7 @@ p {
     line-height: 1.4em;
     color: #333;
 }
-.round_icon{
+img.round_icon{
   width: 200px;
   height: 200px;
   display: flex;
