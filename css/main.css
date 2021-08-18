@@ -2,6 +2,47 @@ body {
     margin: 60px auto;
     width: 70%;
 }
+
+header,hgroup {
+    display:block;
+}
+
+header{
+    padding: 10px 0;
+	height: 25px;
+    background-color: #0073AA;
+    background-image: linear-gradient(top, #6f3736, #4c2626);
+    box-shadow: 0 1px 0 #fff, 0 -3px 3px #000 inset;
+}
+
+header hgroup{
+    margin: 0 auto;
+    width: 100%;
+}
+
+header h1{
+    margin: 0;
+    font: 25px/1 'Luckiest Guy', cursive; /* Google font API */
+    float: left;
+    text-shadow: 0 1px 0 rgba(0,0,0,.9);
+}
+
+header h2{
+    color: #D2A4A4;
+    margin: 0;
+    float: right;
+    font: italic normal 15px/25px Arial, Helvetica;
+}
+
+header a{
+    color: #eee;
+    text-decoration: none;
+}
+
+header a span{
+    color: #d2a4a4;
+}
+
 nav ul, footer ul {
     font-family:'Helvetica', 'Arial', 'Sans-Serif';
     padding: 0px;
