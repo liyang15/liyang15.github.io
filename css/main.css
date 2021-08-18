@@ -1,6 +1,8 @@
 body {
-    margin: 60px auto;
-    width: 70%;
+	margin-top: 5px;
+	margin-left: auto;
+	margin-right: auto;
+    width: 100%;
 }
 
 header,hgroup {
