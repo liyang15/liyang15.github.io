@@ -5,6 +5,7 @@ categories: Python
 tags: Network Engineer
 date: 2021-10-11
 ---
+
 In today’s world, the ability to code continues to grow in importance. Coding is no longer the sole domain of computer scientists and programmers, but rather a useful skill to have in any career.
 
 Kids with an eye to their future know that learning to code is important, but figuring out which one to learn can be an intimidating task. Some languages are easier to learn, while others have a wider application. But one language sits right in the sweet spot.
