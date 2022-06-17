@@ -3,7 +3,7 @@ layout: post
 title:  "Oracle Database 19c"
 categories: netdevops
 tags: Network Engineer
-date: 2022-6-7
+date: 2022-6-17
 ---
 
 Books
