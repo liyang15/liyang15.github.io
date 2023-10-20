@@ -12,39 +12,25 @@ date: 2023-10-20
 
 如[图1](http://127.0.0.1:8890/files/Lib20180125163910_R2_4/documents/链路层协议/topics/43-基本SmartGroup配置实例.html#SmartGroup配置实例-2FFF657E__ad模式配置-9C13ACB3)所示，S1和S2之间运行LACP协议。S1接口gei-0/2/0/5与S2接口gei-0/3/0/5直连，S1接口gei-0/2/0/9与S2接口gei-0/3/0/9直连。
 
+S1===LACP===S2
 
-
-图1 802.3ad模式配置![img](http://127.0.0.1:8890/files/Lib20180125163910_R2_4/documents/%E9%93%BE%E8%B7%AF%E5%B1%82%E5%8D%8F%E8%AE%AE/topics/images/802.3ad%E6%A8%A1%E5%BC%8F%E9%85%8D%E7%BD%AE.png)
+图1 802.3ad模式配置
 
 配置思路
 
-1. 
+1. S1上创建smartgroup1，S2上创建smartgroup1，并进入接口配置模式
 
-   S1上创建smartgroup1，S2上创建smartgroup1，并进入接口配置模式
+2. 分别在S1，S2上的接口配置模式下设置smartgroup1接口的交换属性，并退出到全局模式
 
-2. 
+3. 全局模式下进入LACP配置模式，再进入所要配置的smartgroup接口
 
-   分别在S1，S2上的接口配置模式下设置smartgroup1接口的交换属性，并退出到全局模式
+4. 将S1，S2上smartgroup1的聚合控制方式配置为采用802.3ad标准的LACP协议，配置负荷分担策略以及最小成员数
 
-3. 
+5. 全局模式下进入LACP配置模式，再进入所要配置实接口
 
-   全局模式下进入LACP配置模式，再进入所要配置的smartgroup接口
+6. 分别将图中S1，S2的实接口绑入smartgroup1
 
-4. 
-
-   将S1，S2上smartgroup1的聚合控制方式配置为采用802.3ad标准的LACP协议，配置负荷分担策略以及最小成员数
-
-5. 
-
-   全局模式下进入LACP配置模式，再进入所要配置实接口
-
-6. 
-
-   分别将图中S1，S2的实接口绑入smartgroup1
-
-7. 
-
-   分别将S1，S2上smartgroup1中成员接口配置LACP协商模式以及超时时长
+7. 分别将S1，S2上smartgroup1中成员接口配置LACP协商模式以及超时时长
 
 配置过程
 
@@ -154,3 +140,4 @@ gei-0/2/0/9   1840       1840       0   0     0          0
 /*依据配置的timeout参数，Tx和Rx的数值每30秒或1秒增加1*/
 gei-0/2/0/5   1840       1840       0   0     0          0
 ```
+
