@@ -1,64 +1,162 @@
 ---
 layout: post
-title:  "MikroTik Wireguard server with Road Warrior clients"
+title:  "MikroTik RouterOS and WireGuard for Road Warriors"
 categories: netdevops
 tags: Network Engineer
 date: 2024-2-22
 ---
 
-This document is a tutorial on how to set up wireguard VPN on  MikroTik for road warrior clients like iOS devices. RouterOS v7.x is  needed.
+## Introduction
 
-Wireguard is like a series of point to point tunnels, but the same IP can be used on the side of the Wireguard system itself.* In this  example, we have assigned a dedicated Wireguard subnet 192.168.66.0/24,  separate from our main internal network on the Mikrotik. The Wireguard  server router has the IP 192.168.66.1/24, and the Wireguard clients are  192.168.66.2, 192.168.66.3, etc. You end up with the following point to  point tunnels formed:
+As the world starts to open back up, I find that I am traveling more, but I still need access to my home network and Lab equipment for demos and testing. I have tried various VPNs over the years including OpenVPN and ZeroTier and IPsec. These all worked well, but required running a separate server to handle the VPN termination, and were difficult to configure and maintain. In 2020, a new player entered the ring called [WireGuard](https://www.wireguard.com/). If you don’t know what WireGuard is, here is how WireGuard describes itself:
 
-192.168.66.1 (the Wireguard server router itself) <-----------> Wireguard client on 192.168.66.2 192.168.66.1 (the Wireguard server router itself) <-----------> Wireguard client on 192.168.66.3 etc.
+> WireGuard is an extremely simple yet fast and modern VPN that utilizes state-of-the-art cryptography. It aims to be faster, simpler, leaner, and more useful than IPsec, while avoiding the massive headache.
 
-These Wireguard client IPs are assigned statically, and typically use private IPs that are completely unrelated to their public IPs that  these clients may actually be on. There is currently no dynamic means  (ex. DHCP) for handing out IPs to Wireguard clients, which might make it unsuitable for very large RoadWarrior setups as manual configuration is needed for each user.
+As I looked at my home lab/network I decided that I wanted to run my VPN service from my primary router. My choice of home router is the [MikroTik RB3011](https://mikrotik.com/product/RB3011UiAS-RM). This router supports a few different options when it comes to VPNs, and with the release of MikroTik RouterOS 7, WireGuard has been added as a native VPN service.
 
-** Note: Technically, the Wireguard server router does not need an IP on this subnet, but if you do not give it one, you need to create  static routes for your clients to be accessible. These routes are  unnecessary if the Wireguard server router has an IP on this subnet as a "dynamic connected" route will exist, auto-created by the MikroTik, and this strategy will be easier for most users.*
+This blog post will talk about how to configure MikroTik 7.5 in a “Road Warrior” configuration. A “Road Warrior” configuration allows you to connect into your remote network (in this case my home lab) from any Internet connection, and route ALL traffic through the remote (home) network. This not only gives you secure access to your home network and resources, it also ensures that my network access can not be intercepted by third parties.
 
-MikroTik Wireguard server config:
+## Prerequisites
 
-Code: [Select all](https://forum.mikrotik.com/viewtopic.php?p=899406#)
+- A MikroTik Router running RouterOS 7.4 or higher
+- [WireGuard Client](https://www.wireguard.com/install/) for OSX (or your favorite OS Client)
+- Dynamic DNS Host Name - we will configure one below, or you can use an existing DDNS host name
 
-```
-# a private and public key will be automatically generated when adding the wireguard interface
-/interface wireguard
-add listen-port=13231 mtu=1420 name=wireguard1
-/interface wireguard peers
-# the first client added here is ipv4 only
-add allowed-address=192.168.66.2/32 interface=wireguard1 public-key="replace-with-public-key-of-first-client"
-# the second client is dual stack - public IPv6 should be used - replace 2001:db8:cafe:beef: with one of your /64 prefixes.
-add allowed-address=192.168.66.3/32,2001:db8:cafe:beef::3/128 interface=wireguard1 public-key="replace-with-public-key-of-second-client-dual-stack"
-/ip address
-add address=192.168.66.1/24 interface=wireguard1 network=192.168.66.0
-/ipv6 address
-add address=2001:db8:cafe:beef::1/64 interface=wireguard1
-```
+## Configuring RouterOS
 
-Example iOS wireguard client config **(acts as "second client" above)**:
+We will configure RouterOS using the RouterOS command line. You can access the command line from either the Web UI or by connecting to to your router via SSH. I do not recommend using the WebUI to add new WireGuard clients to the system. Using the Web UI caused me two days of troubleshooting only to figure out that something in the Web UI is broken and not creating the peer entries correctly. Consider yourself warned.
 
-Code: [Select all](https://forum.mikrotik.com/viewtopic.php?p=899406#)
+Start by connecting to your RouterOS command line via ssh `user@<router IP address>`.
+
+### Create a Dynamic DNS Hostname
+
+You will need a way to connect to your public IP address when you are out on the road. You can use a Dynamic DNS client to configure a host name that will always be the same but resolve to your current public IP address. MikroTik routers have built in support for creating a Dynamic DNS entry that ends in *.sn.mynetname.net*, or you can use any other client. If you do not have a client, here is how you enable this feature on a MikroTik router:
 
 ```
-Interface: (whatever name you want to specify)
-Public key: the client should automatically generate this - add this to the server above replacing "replace-with-public-key-of-second-client-dual-stack"
-Addresses: 192.168.66.3/24,2001:db8:cafe:beef::3/64          (note these are different subnet masks than in the server config)
-DNS servers: as desired - if you want to use the wireguard server for dns, specify 192.168.66.1
-
-Peer:
-Public key - get the public key from the wireguard interface on the mikrotik and place here
-Endpoint - mydyndns.whatever:13231
-Allowed IPs: 0.0.0.0/0, ::/0
+[admin@home] > /ip cloud set ddns-enabled=yes
+[admin@home] > /ip cloud print
+         ddns-enabled: yes
+ ddns-update-interval: none
+          update-time: yes
+       public-address: 1.2.3.4
+  public-address-ipv6: 1a04:610:8501:2000::5
+             dns-name: 530d0391a71d.sn.mynetname.net
+               status: updated
 ```
 
-This config will result in the client sending all traffic through the MikroTik Wireguard server. If you do not want all traffic sent through  (i.e. split include), limit the peer's "Allowed IPs" to whatever subnets it should access through the tunnel rather than 0.0.0.0/0 and ::/0
+In the example above, MikroTik has assigned *530d0391a71d.sn.mynetname.net* as a host name for your connection. Be sure you get your hostname from the output and record it for later use.
 
-You also need to create an input chain firewall rule to allow UDP  traffic to destination port 13231 in order for the Wireguard tunnel to  be established in the first place.
+### Creating the WireGuard Interface
 
-Code: [Select all](https://forum.mikrotik.com/viewtopic.php?p=899406#)
+We will next create a WireGuard interface on the router. The interface will be called *wireguard1* and will listen on port *13231*:
 
 ```
-/ip firewall filter add action=accept chain=input comment="Allow Wireguard" dst-port=13231 protocol=udp
+[admin@home] > /interface wireguard
+[admin@home] > add listen-port=12345 name=wireguard1
 ```
 
-The traffic you send when connected to Wireguard will come from your  Wireguard client IP, 192.168.66.2 or 192.168.66.3 in my example. As a  result, you have to make sure that your MikroTik firewall is allowing  this traffic, that it is being NATted etc. If your config is based on  the MikroTik default configuration, one way you can do this is by adding the Wireguard interface itself to your LAN interface list, which should take care of both allowing the traffic through and NATing it.
+With the WireGuard interface created, we will assign an IP address to the interface. Note that this should be an IP on a NEW subnet, do not use an existing subnet for your WireGuard network. In the example below we will be using Network *192.168.100.0/24* and assigning the IP address *192.168.100.1* to this interface:
+
+```
+[admin@home] > /ip address
+[admin@home] > add address=192.168.100.1/24 interface=wireguard1
+```
+
+With the WireGuard interface created and configured, we need to open a firewall port to allow wireguard traffic into the router:
+
+```
+[admin@home] > /ip firewall filter
+[admin@home] > add action=accept chain=input comment="allow WireGuard" dst-port=12345 protocol=udp place-before=1
+```
+
+Next we will add the WireGuard interface to the **LAN** list which will allow the router to pass the traffic for all the WireGuard clients that connect going forward:
+
+```
+[admin@home] > /interface list member
+[admin@home] > add interface=wireguard1 list=LAN
+```
+
+### Retrieving the WireGuard Public Key
+
+Finally, we need to get the Router’s WireGuard **Public** key. We will need this in the next section [Configuring the OSX Client](https://xphyr.net/post/wireguard_and_routeros/#configuring-the-osx-client)
+
+```
+[admin@home] > /interface wireguard print
+Flags: X - disabled; R - running
+ 0  R name="wireguard1" mtu=1420 listen-port=12345 private-key="cBPD6JNvbEQr73gJ7NmwepSrSPK3np381AWGvBk/QkU="
+      public-key="VmGMh+cwPdb8//NOhuf1i1VIThypkMQrKAO9Y55ghG8="
+```
+
+> **NOTE:** You need to ensure that you do NOT publish the “private-key” anywhere. This would compromise your security.
+
+At this point, you are now ready for configuring your remote clients.
+
+## Configuring a Client
+
+### Install the Client
+
+We will be using the OSX Client that can be obtained from the App Store [WireGuard](https://apps.apple.com/us/app/wireguard/id1451685025?mt=12). The steps that we will use below can also be used for configuring other clients. The configuration file is used in most implementations of WireGuard.
+
+### Configure Your Connection
+
+Once you have installed the WireGuard client, open the configuration tool by selecting “Manage Tunnels”. We can then create our “Home Connection” tunnel, by selecting the “+” and then select “Add Empty Tunnel”.
+
+Start by entering a **Name:**, this is the name you will use later to reference this connection. Also take note of the **Public Key:**, we will need this shortly when we configure the MikroTik device to trust this connection.
+
+![img](https://xphyr.net/images/wgmikrotik/wg-tunnel.png)
+
+Use the following as a template to configure your connection. Be sure you do not overwrite the *PrivateKey* that was generated by your client.
+
+```ini
+[Interface]
+PrivateKey = qLZ59foscJYkFxP4L7OFjW0fWJ3oUgfBveF3pMa8/14=
+Address = 192.168.100.2/24
+DNS = <ip address of your MikroTik Router>
+
+[Peer]
+PublicKey = VmGMh+cwPdb8//NOhuf1i1VIThypkMQrKAO9Y55ghG8=
+AllowedIPs = 0.0.0.0/0
+Endpoint = 530d0391a71d.sn.mynetname.net:12345
+PersistentKeepalive = 25
+```
+
+A few key entries to point out here:
+
+- **PrivateKey** - This is generated by the client. Do not change this or share the *PrivateKey* with anyone.
+- **Address** - All IPs in WireGuard are statically assigned. Pick another IP address from the network you created earlier, and make sure you don’t duplicate IPs
+- **DNS** - This should point to the DNS servers *inside* your network. This ensures that you do not leak information on public networks based on your DNS resolution
+- **PublicKey** - This is the *PublicKey* from [Retrieving the WireGuard Public Key](https://xphyr.net/post/wireguard_and_routeros/#retrieving-the-wireguard-public-key) section above
+- **Endpoint** - This should be set to the Dynamic DNS name you got above from [Create a Dynamic DNS Hostname](https://xphyr.net/post/wireguard_and_routeros/#create-a-dynamic-dns-hostname)
+- **AllowedIPs** - This is basically setting up routing on your client. In this case we want the default route (0.0.0.0/0) to go through our WireGuard interface.
+- **PersistentKeepalive** - This is used to keep the tunnel up and running, and ensure that if you are behind NAT firewalls, that you do not loose your connection.
+
+Complete the configuration by clicking **Save** to save the configuration to disk. It’s now time to configure our MikroTik router with the Public key of our client.
+
+## Add the remote machine to the WireGuard Peer list
+
+If you are not still connected to your MikroTik console, reconnect to your console and run the following commands to create a peer:
+
+```
+[admin@home] > /interface wireguard peers
+[admin@home] > add allowed-address=192.168.100.2/32 interface=wireguard1 public-key="RoH+bXZyRY5gPxTCtsu5AFBsK2NZClExcTMqNak6hjM="
+```
+
+Be sure that you set the *allowed-address* to the IP address that you assigned in your client configuration, and you use the public-key generated by **your** client.
+
+You can validate that your peer was added by using the *wireguard print* command to see the peer was created:
+
+```
+[admin@home] > /interface wireguard peers print
+[admin@home] /interface/wireguard/peers> print
+Columns: INTERFACE, PUBLIC-KEY, ENDPOINT-PORT, ALLOWED-ADDRESS
+# INTERFACE    PUBLIC-KEY                                    ENDPOINT-PORT  ALLOWED-ADDRESS
+0 wireguard1   RoH+bXZyRY5gPxTCtsu5AFBsK2NZClExcTMqNak6hjM=              0  192.168.100.2/32
+```
+
+At this point, you can now test your connection. From the WireGuard GUI, select the tunnel configuration and click **Activate**. You should see *Data received* and *Data sent* start to increment.
+
+![img](https://xphyr.net/images/wgmikrotik/wg-running.png)
+
+## Conclusion
+
+By leveraging the WireGuard services built into your MikroTik router, you can securely connect to your home network and your home network resources. This configuration also gives you the added functionality of helping secure your Internet access when you are away from home, by leveraging your DNS servers and home internet connection for all outbound connections.
