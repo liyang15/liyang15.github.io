@@ -1,12 +1,10 @@
 ---
 layout: post
-title:  "WConfigure MikroTik Router as WireGuard VPN Appliance"
+title:  "Configure MikroTik Router as WireGuard VPN Appliance"
 categories: netdevops
 tags: Network Engineer
 date: 2024-2-22
 ---
-
-# Configure MikroTik Router as WireGuard VPN Appliance
 
 *You may need to upgrade your MikroTik if the WireGuard options are not available.*
 
