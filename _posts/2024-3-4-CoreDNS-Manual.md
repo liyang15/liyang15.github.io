@@ -6,9 +6,6 @@ tags: Network Engineer
 date: 2024-3-4
 ---
 
-
-Modified: 2019-09-28
-
 # [What is CoreDNS?](https://coredns.io/manual/toc/#what-is-coredns)
 
 CoreDNS is a DNS server. It is written in [Go](https://golang.org/).
@@ -26,8 +23,6 @@ There are currently about 30 plugins included in the default CoreDNS install, bu
 Writing new [plugins](https://coredns.io/manual/toc/#writing-plugins) should be easy enough, but requires knowing Go and having some insight into how DNS works. CoreDNS abstracts away a lot of DNS details, so that you can just focus on writing the plugin functionality you need.
 
  
-
-Modified: 2019-09-28
 
 # [Installation](https://coredns.io/manual/toc/#installation)
 
@@ -75,11 +70,7 @@ _udp.whoami.example.org. 0	IN	SRV	0 0 39368 .
 
 The [next section](https://coredns.io/manual/toc/#configuration) will show how to enable more interesting plugins.
 
- 
-
-Modified: 2019-09-28
-
-# [Plugins](https://coredns.io/manual/toc/#plugins)
+#  [Plugins](https://coredns.io/manual/toc/#plugins)
 
 Once CoreDNS has been started and has parsed the configuration, it runs Servers. Each Server is defined by the zones it serves and on what port. Each Server has its own Plugin Chain.
 
@@ -135,10 +126,6 @@ The Registration part registers the plugin in CoreDNS - this happens when CoreDN
 ## [Plugin Documentation](https://coredns.io/manual/toc/#plugin-documentation)
 
 Each plugin has its own README detailing how it can be configured. This README includes examples and other bits a user should be aware of. Each of these READMEs end up on https://coredns.io/plugins, and we also compile them into [manual pages](https://github.com/coredns/coredns/tree/master/man).
-
- 
-
-Modified: 2019-09-28
 
 # [Configuration](https://coredns.io/manual/toc/#configuration)
 
@@ -351,10 +338,6 @@ What happened here? `health` is seen as a zone (and the start of a Server Block)
 
 That line in the *health* plugin’s documentation means that once *health* is specified, it is global for the entire CoreDNS process, even though you’ve only specified it for one server.
 
- 
-
-Modified: 2019-09-28
-
 # [Setups](https://coredns.io/manual/toc/#setups)
 
 Here you can find a bunch of configurations for CoreDNS. All setups are done assuming you are not the root user and hence can’t start listening on port 53. We will use port 1053 instead, using the `-dns.port` flag. In every setup, the configuration file used is the CoreDNS' default, named `Corefile`. This means we *don’t need* to specify the configuration file with the `-conf` flag. In other words, we start CoreDNS with `./coredns -dns.port=1053 -conf Corefile`, which can be abbreviated to `./coredns -dns.port=1053`.
@@ -491,10 +474,6 @@ Assuming this worked, you can then enable *unbound* with the following Corefile:
 ```
 
 [*cache*](https://coredns.io/plugins/cache) has been included, because the (internal) cache from *unbound* is disabled to allow the cache’s metrics to works just like normal.
-
- 
-
-Modified: 2019-09-28
 
 # [Writing Plugins](https://coredns.io/manual/toc/#writing-plugins)
 
