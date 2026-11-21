@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我的简易网页</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+      background: linear-gradient(135deg, #e0f2fe 0%, #ede9fe 100%);
+      min-height: 100vh;
+      color: #1f2937;
+    }
+    header {
+      text-align: center;
+      padding: 72px 20px 40px;
+    }
+    header h1 {
+      font-size: 2.6rem;
+      background: linear-gradient(90deg, #2563eb, #7c3aed);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 14px;
+    }
+    header p { font-size: 1.1rem; color: #4b5563; }
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 20px 60px;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 14px;
+      padding: 26px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 22px rgba(0,0,0,0.12);
+    }
+    .card h2 { font-size: 1.2rem; margin-bottom: 10px; color: #2563eb; }
+    .card p { color: #4b5563; line-height: 1.7; font-size: .95rem; }
+    .counter-box {
+      margin-top: 40px;
+      text-align: center;
+      background: rgba(255,255,255,0.85);
+      border-radius: 14px;
+      padding: 30px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    }
+    .counter-box h2 { margin-bottom: 16px; }
+    #count {
+      font-size: 2.4rem;
+      font-weight: bold;
+      color: #7c3aed;
+      display: block;
+      margin-bottom: 18px;
+    }
+    button {
+      background: linear-gradient(90deg, #2563eb, #7c3aed);
+      color: #fff;
+      border: none;
+      padding: 12px 28px;
+      font-size: 1rem;
+      border-radius: 999px;
+      cursor: pointer;
+      margin: 0 6px;
+      transition: opacity .2s;
+    }
+    button:hover { opacity: .85; }
+    footer {
+      text-align: center;
+      padding: 24px;
+      color: #6b7280;
+      font-size: .85rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>欢迎来到我的简易网页</h1>
+    <p>一个用 HTML + CSS + JavaScript 做的小页面</p>
+  </header>
+
+  <main>
+    <section class="cards">
+      <div class="card">
+        <h2>🌐 简洁设计</h2>
+        <p>使用响应式布局和渐变配色，在手机和电脑上都能正常显示。</p>
+      </div>
+      <div class="card">
+        <h2>⚡ 轻量无依赖</h2>
+        <p>全部代码都在这一个 HTML 文件里，无需任何框架或外部库。</p>
+      </div>
+      <div class="card">
+        <h2>🎛️ 小互动</h2>
+        <p>下面有一个简单的计数器，点击按钮就能体验 JavaScript 交互。</p>
+      </div>
+    </section>
+
+    <div class="counter-box">
+      <h2>点击计数器</h2>
+      <span id="count">0</span>
+      <div>
+        <button onclick="changeCount(1)">+1</button>
+        <button onclick="changeCount(-1)">-1</button>
+        <button onclick="resetCount()">重置</button>
+      </div>
+    </div>
+  </main>
+
+  <footer>© 2026 我的简易网页 · 用 WorkBuddy 制作</footer>
+
+  <script>
+    let count = 0;
+    const el = document.getElementById('count');
+    function changeCount(n) {
+      count += n;
+      el.textContent = count;
+    }
+    function resetCount() {
+      count = 0;
+      el.textContent = count;
+    }
+  </script>
+</body>
+</html>
